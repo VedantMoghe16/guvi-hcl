@@ -900,6 +900,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
+import time
+
+@app.post("/honeypot")
+async def honeypot(req: HoneypotRequest):
+    start = time.time()
+
+    # safety return
+    if time.time() - start > 5:
+        return {
+            "status": "accepted",
+            "note": "processing deferred"
+        }
 
 @app.post("/honeypot", response_model=HoneypotResponse)
 @limiter.limit("40/minute")
